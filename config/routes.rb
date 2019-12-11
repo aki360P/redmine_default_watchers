@@ -1,2 +1,3 @@
-get 'default_watchers', :to => 'default_watchers#index'
-post 'default_watchers', :to => 'default_watchers#update'
+Rails.application.routes.draw do
+  match 'projects/:project_id/settings/default_watchers/:action', :controller => 'default_watchers', :via => [:get, :post, :patch, :put]
+end

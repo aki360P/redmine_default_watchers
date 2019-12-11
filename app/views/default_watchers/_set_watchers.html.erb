@@ -1,7 +1,12 @@
 <script type="text/javascript">
   $(document).ready(function() {
-    var default_watchers = [<%= DefaultWatcher.joins(:watcher).where(:user_id => User.current.id).uniq.pluck(:watcher_id).join(',') %>];
+    var str = "<%= @rdfw[:watcher_ids] %>";
+        str = str.replace("[","")
+        str = str.replace("]","")
+    var default_watchers = str.split(','); 
+    console.log(default_watchers);
     $.each(default_watchers, function(index, watcher_id) {
+      console.log(index + ': ' + watcher_id);
       $("input[name='issue[watcher_user_ids][]'][value="+watcher_id+"]").attr('checked', 'checked');
     });
   });

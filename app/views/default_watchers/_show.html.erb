@@ -1,0 +1,35 @@
+
+<div class='default_watchers'>
+
+<%= labelled_form_for :settings, @rdfw,
+                             :url => {:controller => 'default_watchers',
+                             :action => 'edit', :project_id => @project, :tab => 'default_watchers'}, 
+                             :html => {:id => 'default_watchers' } do |f| %>
+
+	<% rdfw = DefaultWatcher.find_or_create(@project.id) %>
+
+	<h2>Default watchers</h2>
+	<%= check_box_tag 'settings[watcher_ids][]', 0, rdfw[:watcher_ids].include?("0") %> clear all
+	<br>
+	<br>
+
+	<table class="list">
+	<% @project.users.each do |user| %>
+	  <tr class="<%= cycle 'odd', 'even' %>">
+	    <td width="30px">
+		  <%= check_box_tag 'settings[watcher_ids][]', user.id, rdfw[:watcher_ids].include?(user.id.to_s) %>
+	    </td>
+	    <td>
+	      <%= user.name %>
+	    </td>
+	  </tr>
+	<% end %>
+
+	</table>
+  <%= submit_tag l(:button_save) %>
+
+  <br><br>
+  test <%= rdfw[:watcher_ids] %>
+
+  <% end %>
+</div>

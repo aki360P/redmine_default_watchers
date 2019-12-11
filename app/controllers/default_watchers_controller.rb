@@ -1,19 +1,50 @@
 class DefaultWatchersController < ApplicationController
   unloadable
+  before_action :require_login
+  before_action :find_user, :find_project, :authorize
 
-  def index
-    @all_active_users = User.active.find(:all, :order => "firstname")
-    @default_watchers = DefaultWatcher.find_all_by_user_id(User.current.id).map{|u| u.watcher}
+  def initialize
+    super()
   end
 
-  def update
-    DefaultWatcher.find_all_by_user_id(User.current.id).each{|w| w.destroy}
-    if params[:watcher_ids].is_a?(Array)
-      params[:watcher_ids].each do |id|
-        DefaultWatcher.find_or_create_by_user_id_and_watcher_id(User.current.id, id)
-      end
+  def show
+  end
+  
+  def edit
+
+    unless params[:settings].nil?
+      rdfw = DefaultWatcher.find_or_create(@project.id)
+      rdfw.update(rdfw_params)
+
+      temp = rdfw.watcher_ids.gsub!("\"","")
+      rdfw.attributes = { watcher_ids: temp}
+      rdfw.save
+
+
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to controller: 'projects',
+                  action: 'settings', id: @project, tab: 'default_watchers'
     end
-    flash[:notice] = l(:notice_successful_update)
-    redirect_to :action=>:index
+    
+  end
+  
+
+  
+  
+
+  private
+
+  def find_user
+    @user = User.current
+  end
+
+  def find_project
+    @project = Project.find(params[:project_id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+  
+  def rdfw_params
+    params.require(:settings).permit(watcher_ids: [])
   end
 end
